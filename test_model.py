@@ -1,3 +1,5 @@
+import time
+import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 MODEL_NAME = "meta-llama/Llama-3.2-3B-Instruct"
@@ -11,18 +13,25 @@ model = AutoModelForCausalLM.from_pretrained(
     device_map="auto"
 )
 
-print("Model loaded!")
+print("Model loaded successfully!")
 
 prompt = "Explain what artificial intelligence is in simple words."
 
-inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-
-outputs = model.generate(
-    **inputs,
-    max_new_tokens=100,
-    temperature=0.7,
-    do_sample=True
+inputs = tokenizer(
+    prompt,
+    return_tensors="pt"
 )
+
+start_time = time.time()
+
+with torch.no_grad():
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=50,
+        do_sample=False
+    )
+
+end_time = time.time()
 
 response = tokenizer.decode(
     outputs[0],
@@ -31,3 +40,7 @@ response = tokenizer.decode(
 
 print("\n========== RESPONSE ==========\n")
 print(response)
+
+print("\n========== PERFORMANCE ==========")
+print(f"Generation time: {end_time - start_time:.2f} seconds")
+print(f"Generated tokens: {outputs.shape[1] - inputs['input_ids'].shape[1]}")

@@ -1,16 +1,24 @@
-transformers
-torch
-accelerate
-huggingface_hub
+# LLM inference
+llama-cpp-python
 
+# Hugging Face / embeddings
+huggingface_hub
 sentence-transformers
 
+# RAG / LangChain
 langchain
 langchain-community
 langchain-huggingface
 
+# Vector database
 chromadb
 
-flask
+# PDF processing
 pypdf
+
+# Environment variables
 python-dotenv
+
+# Web application
+flask
+
