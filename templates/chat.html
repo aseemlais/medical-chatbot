@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Aseem Health Assistant</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          rel="stylesheet">
+
+    <!-- Our stylesheet -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="header">
+
+        <div class="header-top">
+
+            <div class="brand">
+
+                <div class="brand-mark">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="#fff"
+                         stroke-width="2"
+                         stroke-linecap="round">
+
+                        <path d="M12 3v18"/>
+                        <path d="M3 12h18"/>
+
+                    </svg>
+
+                </div>
+
+
+                <div>
+
+                    <div class="brand-name">
+                        Aseem
+                    </div>
+
+                    <div class="brand-sub">
+                        Health Assistant
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="status-pill">
+
+                <span class="status-dot"></span>
+
+                Online
+
+            </div>
+
+        </div>
+
+
+        <!-- ECG-style animation -->
+
+        <div class="trace-wrap">
+
+            <svg viewBox="0 0 600 40"
+                 preserveAspectRatio="none">
+
+                <path
+                    class="trace-line"
+                    d="M0,20
+                       L60,20
+                       L75,20
+                       L85,4
+                       L95,36
+                       L105,20
+                       L160,20
+                       L175,20
+                       L185,8
+                       L195,32
+                       L205,20
+                       L300,20
+                       L360,20
+                       L375,20
+                       L385,4
+                       L395,36
+                       L405,20
+                       L460,20
+                       L475,20
+                       L485,8
+                       L495,32
+                       L505,20
+                       L600,20"/>
+
+            </svg>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MEDICAL DISCLAIMER
+         ===================================================== -->
+
+    <div class="disclaimer">
+
+        <strong>Not a diagnosis.</strong>
+
+        Aseem provides general medical information from its
+        reference library and is not a substitute for
+        professional medical advice.
+
+    </div>
+
+
+    <!-- =====================================================
+         CHAT MESSAGES
+         ===================================================== -->
+
+    <main class="messages"
+          id="messages">
+
+
+        <!-- Initial greeting -->
+
+        <div class="row bot">
+
+            <div class="avatar bot">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>
+
+                </svg>
+
+            </div>
+
+
+            <div>
+
+                <div class="bubble">
+
+                    Hi, I'm Aseem. 👋
+
+                    <br><br>
+
+                    I'm your medical information assistant.
+                    Ask me a question and I'll search my
+                    medical reference library to provide a
+                    grounded response.
+
+                </div>
+
+
+                <div class="meta">
+                    Local AI · Ready
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Quick questions -->
+
+        <div class="options">
+
+            <button class="option-chip"
+                    type="button">
+
+                What is diabetes?
+
+            </button>
+
+
+            <button class="option-chip"
+                    type="button">
+
+                What is hypertension?
+
+            </button>
+
+
+            <button class="option-chip"
+                    type="button">
+
+                Ask a medical question
+
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         INPUT
+         ===================================================== -->
+
+    <div class="input-bar">
+
+        <div class="input-shell">
+
+            <input
+                type="text"
+                id="chatInput"
+                placeholder="Ask a medical question..."
+                autocomplete="off"
+                maxlength="1000"
+            >
+
+
+            <button
+                class="send-btn"
+                id="sendBtn"
+                type="button"
+                aria-label="Send message">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="#fff"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="m22 2-7 20-4-9-9-4Z"/>
+                    <path d="M22 2 11 13"/>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <div class="footnote">
+
+            AI-generated information · For emergencies,
+            seek immediate professional medical care
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+
+    /* ---------------------------------------------------------
+       Timestamp
+       --------------------------------------------------------- */
+
+    function timestamp() {
+
+        const now = new Date();
+
+        return now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Scroll to bottom
+       --------------------------------------------------------- */
+
+    function scrollToBottom() {
+
+        messages.scrollTop = messages.scrollHeight;
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Add user message
+       --------------------------------------------------------- */
+
+    function addUserMessage(text) {
+
+        const row = document.createElement("div");
+
+        row.className = "row user";
+
+
+        const wrapper = document.createElement("div");
+
+
+        const bubble = document.createElement("div");
+
+        bubble.className = "bubble";
+
+        bubble.textContent = text;
+
+
+        const meta = document.createElement("div");
+
+        meta.className = "meta";
+
+        meta.textContent = timestamp();
+
+
+        wrapper.appendChild(bubble);
+
+        wrapper.appendChild(meta);
+
+        row.appendChild(wrapper);
+
+        messages.appendChild(row);
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Add bot message
+       --------------------------------------------------------- */
+
+    function addBotMessage(text, isError = false) {
+
+        const row = document.createElement("div");
+
+        row.className = "row bot";
+
+
+        const avatar = document.createElement("div");
+
+        avatar.className = "avatar bot";
+
+
+        avatar.innerHTML = `
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="#fff"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>
+
+            </svg>
+        `;
+
+
+        const wrapper = document.createElement("div");
+
+
+        const bubble = document.createElement("div");
+
+        bubble.className = "bubble";
+
+        if (isError) {
+
+            bubble.classList.add("error-bubble");
+
+        }
+
+
+        bubble.textContent = text;
+
+
+        const meta = document.createElement("div");
+
+        meta.className = "meta";
+
+        meta.textContent = timestamp();
+
+
+        wrapper.appendChild(bubble);
+
+        wrapper.appendChild(meta);
+
+        row.appendChild(avatar);
+
+        row.appendChild(wrapper);
+
+        messages.appendChild(row);
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Typing indicator
+       --------------------------------------------------------- */
+
+    function showTyping() {
+
+        const row = document.createElement("div");
+
+        row.className = "typing-row";
+
+        row.id = "typingIndicator";
+
+
+        const avatar = document.createElement("div");
+
+        avatar.className = "avatar bot";
+
+
+        avatar.innerHTML = `
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="#fff"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>
+
+            </svg>
+        `;
+
+
+        const typing = document.createElement("div");
+
+        typing.className = "typing";
+
+
+        typing.innerHTML = `
+            <span></span>
+            <span></span>
+            <span></span>
+        `;
+
+
+        row.appendChild(avatar);
+
+        row.appendChild(typing);
+
+        messages.appendChild(row);
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Remove typing indicator
+       --------------------------------------------------------- */
+
+    function hideTyping() {
+
+        const typing = document.getElementById(
+            "typingIndicator"
+        );
+
+
+        if (typing) {
+
+            typing.remove();
+
+        }
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Send question to Flask
+       --------------------------------------------------------- */
+
+    async function sendMessage(text = null) {
+
+        if (sendBtn.disabled) {
+            return;
+        }
+
+
+        const question = (
+            text !== null
+                ? text
+                : input.value
+        ).trim();
+
+
+        if (!question) {
+            return;
+        }
+
+
+        /* Add user message */
+
+        addUserMessage(question);
+
+
+        /* Clear input */
+
+        input.value = "";
+
+
+        /* Disable input while Llama responds */
+
+        input.disabled = true;
+
+        sendBtn.disabled = true;
+
+
+        /* Show typing animation */
+
+        showTyping();
+
+
+        try {
+
+            const response = await fetch(
+                "/ask",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        question: question
+                    })
+                }
+            );
+
+
+            const data = await response.json();
+
+
+            hideTyping();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "Something went wrong."
+                );
+
+            }
+
+
+            /* Display RAG answer */
+
+            addBotMessage(data.answer);
+
+
+        }
+
+        catch (error) {
+
+            hideTyping();
+
+
+            console.error(
+                "Chat error:",
+                error
+            );
+
+
+            addBotMessage(
+                "I'm sorry, I couldn't process your question right now. Please try again.",
+                true
+            );
+
+        }
+
+
+        finally {
+
+            input.disabled = false;
+
+            sendBtn.disabled = false;
+
+            input.focus();
+
+        }
+
+    }
+
+
+    /* ---------------------------------------------------------
+       Send button
+       --------------------------------------------------------- */
+
+    sendBtn.addEventListener(
+        "click",
+        () => sendMessage()
+    );
+
+
+    /* ---------------------------------------------------------
+       Enter key
+       --------------------------------------------------------- */
+
+    input.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    /* ---------------------------------------------------------
+       Quick question buttons
+       --------------------------------------------------------- */
+
+    document
+        .querySelectorAll(".option-chip")
+        .forEach(
+            function(chip) {
+
+                chip.addEventListener(
+                    "click",
+                    function() {
+
+                        const question =
+                            chip.textContent.trim();
+
+
+                        if (
+                            question ===
+                            "Ask a medical question"
+                        ) {
+
+                            input.focus();
+
+                            return;
+
+                        }
+
+
+                        sendMessage(question);
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* ---------------------------------------------------------
+       Initial focus
+       --------------------------------------------------------- */
+
+    input.focus();
+
+</script>
+
+</body>
+
+</html>
+
+
