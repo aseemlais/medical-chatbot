@@ -9,6 +9,7 @@ sentence-transformers
 langchain
 langchain-community
 langchain-huggingface
+langchain-text-splitters
 
 # Vector database
 chromadb
